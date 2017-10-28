@@ -1,0 +1,23 @@
+{
+  "name": "auth-ms",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon --exec ts-node -- ./index.ts"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "mongoose": "^4.12.4",
+    "nodemon": "^1.12.1",
+    "ts-node": "^3.3.0",
+    "tslint": "^5.8.0",
+    "typescript": "^2.5.3"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.16.7",
+    "@types/express": "^4.0.39",
+    "@types/mongoose": "^4.7.24"
+  }
+}
