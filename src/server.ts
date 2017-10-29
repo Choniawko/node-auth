@@ -19,6 +19,7 @@ class Server {
         this.setHeaders()
         this.setRoutes()
         this.mongoConnect()
+        this.handleUnAuthorization()
      }
 
     public setHeaders(): void {
@@ -27,6 +28,17 @@ class Server {
           res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, enctype');
           next();
         });
+    }
+
+    public handleUnAuthorization(): void {
+        this.app.use((err, req, res, next) => {
+            if (err.name === 'UnauthorizedError') {
+              return res.status(403).send({
+                success: false,
+                message: 'No token provided.'
+              });
+            }
+          });
     }
 
     public setRoutes(): void {

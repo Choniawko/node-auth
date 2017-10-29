@@ -1,6 +1,7 @@
 import * as mongoose from 'mongoose'
 import { NextFunction } from 'express'
 import * as bcrypt from 'bcrypt-nodejs'
+import * as jwt from 'jsonwebtoken'
 
 const UserSchema = new mongoose.Schema({
     email: 
@@ -53,7 +54,7 @@ UserSchema.methods.comparePassword = function (candidatePassword: string, cb: (e
     bcrypt.compare(candidatePassword, this.password, (err: mongoose.Error, isMatch: boolean) => {
       cb(err, isMatch);
     });
-  };
+};
 
 const User = mongoose.model('User', UserSchema);
 export default User;
