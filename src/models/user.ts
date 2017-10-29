@@ -1,7 +1,6 @@
 import * as mongoose from 'mongoose'
 import { NextFunction } from 'express'
 import * as bcrypt from 'bcrypt-nodejs'
-import * as jwt from 'jsonwebtoken'
 
 const UserSchema = new mongoose.Schema({
     email: 
