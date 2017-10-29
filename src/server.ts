@@ -3,17 +3,22 @@ import * as bodyParser from 'body-parser'
 import * as http from 'http'
 import * as mongoose from 'mongoose'
 import config from '../config'
+import { router as userRouter } from './controllers/user'
 
 class Server {
     app: express.Express
     server: http.Server
     port: number = 5000
+    router: express.Router
 
     constructor () {
         this.app = express()
+        this.router  = express.Router()
         this.server = http.createServer(this.app)
+        this.setConfig()
         this.setHeaders()
         this.setRoutes()
+        this.mongoConnect()
      }
 
     public setHeaders(): void {
@@ -32,10 +37,18 @@ class Server {
                 port: this.port
             })
         )
+        this.router.use(userRouter)
+        this.app.use(this.router)
+    }
+
+    public setConfig(): void {
+        this.app.use(bodyParser.json({limit: '50mb'}));
+        this.app.use(bodyParser.urlencoded( {extended: true}));
     }
 
     public mongoConnect(): void {
         (<any> mongoose).Promise = global.Promise;
+        
         if (config.database) {
             mongoose.connect(config.database, {useMongoClient: true}, (err: any) => {
                 if (err) {
