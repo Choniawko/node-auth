@@ -1,9 +1,12 @@
 import * as express from 'express'
+import * as path from 'path'
 import * as bodyParser from 'body-parser'
 import * as http from 'http'
 import * as mongoose from 'mongoose'
+import passport from '../config/passport'
 import config from '../config'
 import { router as userRouter } from './controllers/user'
+import { router as apiRouter } from './controllers/api'
 
 class Server {
     app: express.Express
@@ -17,6 +20,7 @@ class Server {
         this.server = http.createServer(this.app)
         this.setConfig()
         this.setHeaders()
+        this.setStaticRoutes()
         this.setRoutes()
         this.mongoConnect()
         this.handleUnAuthorization()
@@ -43,19 +47,35 @@ class Server {
 
     public setRoutes(): void {
         this.app.get('/', (req: express.Request, res: express.Response) => 
-            res.json({
-                protocol: req.protocol,
-                hostname: req.hostname,
-                port: this.port
-            })
+            res.send('index')
         )
+        this.app.get('/auth/facebook', passport.authenticate('facebook', { scope: ['email', 'public_profile'] }));
+        this.app.get('/auth/facebook/callback', passport.authenticate('facebook', 
+            { failureRedirect: '/login' }
+        ), (req, res) => {
+          res.redirect('/');
+        });
         this.router.use(userRouter)
+        this.router.use(apiRouter)
         this.app.use(this.router)
+    }
+
+    private setStaticRoutes() {
+        this.app.use("/node_modules", express.static(
+            path.join(__dirname, "../../node_modules")
+        ));
+        this.app.set("views", path.join(__dirname, "./views"));
+        this.app.use(express.static(path.join(__dirname, "./views")));
+        this.app.engine(".html", require("ejs").__express);
+        this.app.set("view engine", "html");
+
     }
 
     public setConfig(): void {
         this.app.use(bodyParser.json({limit: '50mb'}));
         this.app.use(bodyParser.urlencoded( {extended: true}));
+        this.app.use(passport.initialize());
+        this.app.use(passport.session());
     }
 
     public mongoConnect(): void {

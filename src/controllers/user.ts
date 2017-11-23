@@ -104,4 +104,4 @@ export const login = async (req: Request, res: Response) => {
 export const router = express.Router()
 router.post('/user', addUser)
 router.post('/login', login)
-router.get('/users', isAuthenticated, getUsers)
+router.get('/users', getUsers)
