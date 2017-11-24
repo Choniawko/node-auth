@@ -7,14 +7,30 @@
     <title>Document</title>
 </head>
 <body>
-    <div class="fb-login-button" data-max-rows="1" data-size="large" data-button-type="continue_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="false"></div>
-    <div id="fb-root"></div>
-    <script>(function(d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s); js.id = id;
-      js.src = 'https://connect.facebook.net/pl_PL/sdk.js#xfbml=1&version=v2.11&appId=1782724295352038';
-      fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));</script>
+    <h1>Chat </h1>
+    <form id="form">
+        <input type="text" />
+        <button>Wyślij</button>
+    </form>
+    <div class="container"></div>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script>
+        const form = document.querySelector("#form");
+        const message = form.querySelector("input[type=text]");
+        const socket = io.connect("http://localhost:5000");
+        const container = document.querySelector(".container");
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            if (message.value) {
+                socket.emit("message", message.value);
+                message.value = "";
+            }
+        })
+        socket.on("message", (msg) => {
+            console.log({msg});
+            container.appendChild(document.createElement("p"));
+            container.appendChild(document.createTextNode(msg));
+        })
+    </script>
 </body>
 </html>
