@@ -97,10 +97,14 @@ class Server {
     }
 
     private listenSocket(): void {
-        this.io.on("connection", (socket) => {
-            socket.on("message", (msg: string) => {
-                this.io.emit("message", msg);
+        this.io.on('connection', (socket) => {
+            socket.on('message', (msg: string) => {
+                this.io.emit('message', msg);
             });
+
+            setInterval(() => {
+                socket.emit('timer', new Date())
+            }, 1000)
         });
      }
 

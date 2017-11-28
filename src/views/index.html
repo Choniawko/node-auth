@@ -31,6 +31,15 @@
             container.appendChild(document.createElement("p"));
             container.appendChild(document.createTextNode(msg));
         })
+        socket.on("timer", (date) => {
+            const newDate = `
+                ${new Date(date).getHours()}:${
+                    new Date(date).getMinutes()}:${
+                    new Date(date).getUTCSeconds()
+                }
+            `
+            container.innerHTML = newDate;
+        })
     </script>
 </body>
 </html>
