@@ -1,6 +1,7 @@
 import * as express from 'express'
 import * as path from 'path'
 import * as bodyParser from 'body-parser'
+import * as socketIO from 'socket.io'
 import * as http from 'http'
 import * as mongoose from 'mongoose'
 import passport from '../config/passport'
@@ -13,11 +14,13 @@ class Server {
     server: http.Server
     port: number = 5000
     router: express.Router
+    private io: SocketIO.Server
 
     constructor () {
         this.app = express()
         this.router  = express.Router()
         this.server = http.createServer(this.app)
+        this.io = socketIO(this.server);
         this.setConfig()
         this.setHeaders()
         this.setStaticRoutes()
@@ -93,12 +96,25 @@ class Server {
         }
     }
 
+    private listenSocket(): void {
+        this.io.on('connection', (socket) => {
+            socket.on('message', (msg: string) => {
+                this.io.emit('message', msg);
+            });
+
+            setInterval(() => {
+                socket.emit('timer', new Date())
+            }, 1000)
+        });
+     }
+
     public startServer (): void {
         this.server.listen(this.port, 'localhost', () => {
             console.log(
                 `Aplication listening on
                 http://${this.server.address().address}:${this.server.address().port}`)
         })
+        this.listenSocket();
     }
 
 }
